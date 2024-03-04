@@ -11,12 +11,12 @@ Three types of branches are used:
 - Release branches
 - Integration branches
 
-In addition, specific versions of the code are tagged on the release branch.
+In addition, specific versions of the code are tagged on the release branches.
 
 ### Development branches
-Development branches are the entry points of all new developments. Pull Requests (PR) are made on these branches, and this is where there that the review and integration process start.
+The development branch is the entry points of all new developments. Pull Requests (PR) are made on this branch, and this is where the review and integration process start.
 
-Development branches are based on CMSSW pre-releases and meant to be used primarily by developers. New development branches are created when new CMSSW pre-releases are available. At a given point in time there is only one development branch being used (the one corresponding to the most recent CMSSW pre-release), which means that on-going developments need to be ported to newly created development branches (see Section for information on this porting). **The development branch being used is defined as the `default` branch in Github**.
+Development branches are based on CMSSW pre-releases and meant to be used primarily by developers. New development branches are created when new CMSSW pre-releases are available. At a given point in time there is only one development branch being used (the one corresponding to the most recent CMSSW pre-release), which means that on-going developments need to be ported to newly created development branches (see the following [Section](#moving-to-more-recent-development-and-release-branches) for information on this porting). **The development branch being used at a given moment is defined as the `default` branch in Github**.
 
 Development branches should follow to some extent the evolution of the CMSSW pre-releases, although the creation of a new development branch is in general not necessary for every CMSSW pre-release. 
 
@@ -29,27 +29,29 @@ Release branch names follow the pattern `hgc-tpg-$CMSSW_VERSION` where `$CMSSW_V
 
 
 ### Integration branches
-Integration branches are branches used for integration to the central CMSSW repository. Such branches are created to integrate a set of developments to central CMSSW, and are typically based on the latest CMSSW Integration Build (IB).
+Integration branches are branches used for integration to the central CMSSW repository ([`cms-sw/cmssw`](https://github.com/cms-sw/cmssw)). Such branches are created to integrate a set of developments to central CMSSW, and are typically based on the latest CMSSW Integration Build (IB).
 
-No naming convention is strictly needed for such branches, but the pattern `hgc-tpg-integration-$DATE`, where `$DATE` is the date of the branch creation , has been used so far, e.g. `hgc-tpg-integration-240112`. 
+No naming convention is strictly needed for such branches, but the pattern `hgc-tpg-integration-DATE`, where `DATE` is the date of the branch creation , has been used so far, e.g. `hgc-tpg-integration-240112`. 
 
 
 ### Tags / Releases
 For every piece of developments integrated in the release branch, a tag / release is created. The version numbers are of the form `X.Y.Z`:
 - `Z` is used for bug fixes, code cleaning and small updates that don't impact trigger primitives 
-- `Y` is used for larger updates, and any update that impact trigger primitives
+- `Y` is used for larger updates, and more generally for any update that impact trigger primitives
 - `X` is used for major infrastructure changes
 
 The tag name should contain the version number and an identifier of the CMSSW release on which it is based. So far tag names have been following the pattern `vX.Y.Z_ID`, where `ID` is a shortened identifier of the CMSSW release (for instance `1252p1` for `CMSSW_12_5_2_patch1`). 
 
 ## Overview of the life cycle of new developments
-Developments are tracked in the Github project `HGCAL TPG Simulation Developments` within `hgc-tpg`. The following statuses have been defined:
+Developments are tracked in the Github project [`HGCAL TPG Simulation Developments`](https://github.com/orgs/hgc-tpg/projects/1) within `hgc-tpg`. The following workflow statuses have been defined:
 - `Inbox` for open issues and developments that haven't started yet
 - `Stalled` for developments that have started but are not actively worked on at the moment
 - `In Progress` for developments being worked on. There can be a PR being reviewed associated to these developments.
 - `Ready for Integration` for developments that have been finalised and integrated in `hgc-tpg`, and are ready to be integrated in the central CMSSW repository
 - `Integration in Progress` for developments that have been PRed to the central CMSSW repository and are being reviewed there
-- `Integrated` for developments that have been integrated in the central CMSSW
+- `Integrated` for developments that have been integrated in the central CMSSW. 
+
+To be noted that issues that have been closed and not updated in the last 2 weeks are automatically archived in the project. See the [Project Workflow page](https://github.com/orgs/hgc-tpg/projects/1/workflows/) for more details on automated workflows.
 
 Developments follow the following cycle:
 - They are first PRed to the latest development branch. They are reviewed and validation scripts are triggered.
@@ -72,24 +74,25 @@ Several Github labels are defined to distinguish issues (and PRs). Among these, 
 ## Integration of new developments
 Before being integrated, new developments must be PRed to the latest development branch. No direct pushes are allowed, which is enforced through branch protection. New PRs are automatically entered in the Github project `HGCAL TPG Simulation Developments`, through project workflows.
 
-For every new PR and PR update, a Jenkins CI job is triggered and runs validation scripts which :
+For every new PR and PR update, a Jenkins CI job is triggered and runs validation scripts (defined in [`hgc-tpg/HGCTPGValidation`](https://github.com/hgc-tpg/HGCTPGValidation)) which :
 - Compile the proposed code
 - Run code quality checks (based on `scram code-checks` and `scram code-format`)
 - Run the HGCAL TPG simulation default sequence, and possibly alternative custom sequences, based on the proposed code
 - Also runs the default (and possibly custom) sequences based on the target development branch (which serves as reference to be compared with the proposed code)
-- Compare a set of histogrammed quantities between the proposed code and the reference code, which can help spotting unexpected changes 
+- Compare a set of histogrammed quantities between the proposed code and the reference code, which can help spotting unexpected changes. This comparison is published in the HGC TPG Validation [webpage](https://validation.llrhgcal.in2p3.fr/prod/). 
 
-In addition to the automated validation scripts, it is recommended to have a review of the code before integration, although that is not enforced. The first guiding principle for the review should be to check the code readability and simplicity. More complete guidelines can be found in:
+In addition to the automated validation scripts, it is recommended to have a review of the code before integration, although that is not enforced. The first guiding principle for the review should be to make sure that the intent of any piece of code is clear and can be understood by a future developer. The intent should ideally be expressed in the code itself (minimally with e.g. clear variable and function names and no magic numbers), and eventually in comments if necessary.
+More complete guidelines can be found in:
 - [CMSSW guidelines](https://cms-sw.github.io/cms_coding_rules.html)
 - [C++ Core Guidelines](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines)
 
 Once the proposed code is judged to be mergeable, it can be integrated in the target development branch. In order to have a clear and linear commit history, as well as to simplify the porting of code, all the commits from a PR are **squashed into a single commit** onto the development branch (which is done using `Squash and merge` in Github).  
-When the PR is merged, it is automatically flagged as `Ready for integration` in the Github project `HGCAL TPG Simulation Developments`.
+When the PR is merged, it is automatically flagged as `Ready for integration` in the Github project `HGCAL TPG Simulation Developments` by the project workflow.
 
 ## Backporting and releasing
-New development integrated in the development branch are backported to the latest release branches. This is done through backport PRs onto the release branch. Having backport PRs is useful in order run the validation with the release branch and check that there is no incompatibility between the new code and what is in the release branch.
+New development integrated in the development branch are backported to the latest release branches. This is done through backport PRs onto the release branches. Having backport PRs is useful in order run the validation with the release branch and check that there is no incompatibility between the new code and what is in the release branch.
 
-Backport PRs are conventionally identified with a flag in the PR title, e.g. `[Backport 12_5_2_patch1]`, and with the PR label `backport`. Backport PRs are not included in the Github project `HGCAL TPG Simulation Developments` as the original PRs are already tracked there.
+Backport PRs are conventionally identified with a flag in the PR title, e.g. `[Backport 12_5_2_patch1]`, and with the PR label `backport`. Backport PRs don't need to be included in the Github project `HGCAL TPG Simulation Developments` as the original PRs are already tracked there.
 
 Once the backport PR is validated it can be integrated into the release branch, which is done with **rebasing in order to keep the commit history linear** (using `Rebase and merge` in Github). Then a new version tag is created on the release branch and the user installation recipe is updated in the Twiki page.  
 
@@ -108,7 +111,7 @@ The same process applies when migrating to a new release branch.
 ## Integration in central CMSSW
 Integration in central CMSSW is done when a set of developments is judged to be mature enough. This is done from an `hgc-tpg` integration branch following the standard CMSSW integration process. An integration branch is built from the latest CMSSW IB and the commits to be integrated are **rebased** on it. 
 
-**Important note** :warning: : `data` files (in the `data/` directory) shoud not be integrated into CMSSW, they should go in [`cms-data/L1Trigger-L1THGCal`](https://github.com/cms-data/L1Trigger-L1THGCal). Therefore any new data file should be removed from the git history before the PR to central CMSSW is made. Data files should not only be git removed, but their removal commit should also be squashed with the commit where they appeared, in order to make them disappear from git history. These data files should be PRed to `cms-data/L1Trigger-L1THGCal` in parallel with the PR made to CMSSW.
+**Important note** :warning: : data files (in the `data/` directory) should not be integrated into CMSSW, they should go in [`cms-data/L1Trigger-L1THGCal`](https://github.com/cms-data/L1Trigger-L1THGCal). Therefore any new data file should be removed from the git history before the PR to central CMSSW is made. Data files should not only be git removed, but their removal commit should also be squashed with the commit where they appeared, in order to make them disappear from git history. These data files should be PRed to `cms-data/L1Trigger-L1THGCal` in parallel with the PR made to CMSSW.
 
 The `cms-sw` integration PR description should ideally link to all the related `hgc-tpg` PRs in order to keep track of the individual internal reviews. It should also ideally link to related and relevant presentations in meetings, if any. Once an integration PR has been created, a dedicated `cmssw integration` issue is created in `hgc-tpg` with a link to the integration PR, so that it can easily be tracked. Links to the associated `hgc-tpg` internal PR can also be added to the issue description for easier internal references.
 
