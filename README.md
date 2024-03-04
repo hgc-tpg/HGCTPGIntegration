@@ -93,6 +93,8 @@ Backport PRs are conventionally identified with a flag in the PR title, e.g. `[B
 
 Once the backport PR is validated it can be integrated into the release branch, which is done with **rebasing in order to keep the commit history linear** (using `Rebase and merge` in Github). Then a new version tag is created on the release branch and the user installation recipe is updated in the Twiki page.  
 
+A checklist for backporting and releasing is available in [`checklists/backport.md`](checklists/backport.md).
+
 ## Moving to more recent development and release branches
 Our developments need to follow evolutions in CMSSW, which means that our development branch needs to be based on a recent CMSSW pre-release as much as possible. It implies regularly porting developments existing in a development branch based on a given pre-release to a more recent pre-release. 
 
@@ -100,12 +102,18 @@ To do so, a new development branch based on the most recent pre-release is creat
 
 Once a new development branch has been created, the `default` branch in Github is changed to this new development branch and the developer installation recipe is updated in the Twiki page.
 
+A checklist for moving to a new development branch is available in [`checklists/new-dev-branch.md`](checklists/new-dev-branch.md).
 The same process applies when migrating to a new release branch.
 
 ## Integration in central CMSSW
 Integration in central CMSSW is done when a set of developments is judged to be mature enough. This is done from an `hgc-tpg` integration branch following the standard CMSSW integration process. An integration branch is built from the latest CMSSW IB and the commits to be integrated are **rebased** on it. 
 
-The integration PR description should ideally link to all the related `hgc-tpg` PRs in order to keep track of the individual internal reviews. It should also ideally link to related and relevant presentations in meetings, if any. Once an integration PR has been created, a dedicated `cmssw integration` issue is created in `hgc-tpg` with a link to the integration PR, so that it can easily be tracked. Links to the associated `hgc-tpg` internal PR can also be added to the issue description for easier internal references.
+**Important note** :warning: : `data` files (in the `data/` directory) shoud not be integrated into CMSSW, they should go in [`cms-data/L1Trigger-L1THGCal`](https://github.com/cms-data/L1Trigger-L1THGCal). Therefore any new data file should be removed from the git history before the PR to central CMSSW is made. Data files should not only be git removed, but their removal commit should also be squashed with the commit where they appeared, in order to make them disappear from git history. These data files should be PRed to `cms-data/L1Trigger-L1THGCal` in parallel with the PR made to CMSSW.
+
+The `cms-sw` integration PR description should ideally link to all the related `hgc-tpg` PRs in order to keep track of the individual internal reviews. It should also ideally link to related and relevant presentations in meetings, if any. Once an integration PR has been created, a dedicated `cmssw integration` issue is created in `hgc-tpg` with a link to the integration PR, so that it can easily be tracked. Links to the associated `hgc-tpg` internal PR can also be added to the issue description for easier internal references.
+
+**Important note** :warning: : if data files have been PRed to `cms-data/L1Trigger-L1THGCal`, it should be mentioned in the CMSSW PR message that it depends on external data, with a link to the `cms-data` PR, so that tests can be run using these external data.
 
 In the central review process, changes can be requested. In that case, these changes can eventually be backported to our development branch before the development branch is migrated to a pre-release where these changes are included.
 
+A checklist for integrating development in central CMSSW is available in [`checklists/integration.md`](checklists/integration.md).
