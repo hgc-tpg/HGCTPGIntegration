@@ -14,7 +14,7 @@ Three types of branches are used:
 In addition, specific versions of the code are tagged on the release branches.
 
 ### Development branches
-The development branch is the entry points of all new developments. Pull Requests (PR) are made on this branch, and this is where the review and integration process start.
+The development branch is the entry point of all new developments. Pull Requests (PR) are made on this branch, and this is where the review and integration process start.
 
 Development branches are based on CMSSW pre-releases and meant to be used primarily by developers. New development branches are created when new CMSSW pre-releases are available. At a given point in time there is only one development branch being used (the one corresponding to the most recent CMSSW pre-release), which means that on-going developments need to be ported to newly created development branches (see the following [Section](#moving-to-more-recent-development-and-release-branches) for information on this porting). **The development branch being used at a given moment is defined as the `default` branch in Github**.
 
@@ -79,9 +79,10 @@ For every new PR and PR update, a Jenkins CI job is triggered and runs validatio
 - Run code quality checks (based on `scram code-checks` and `scram code-format`)
 - Run the HGCAL TPG simulation default sequence, and possibly alternative custom sequences, based on the proposed code
 - Also runs the default (and possibly custom) sequences based on the target development branch (which serves as reference to be compared with the proposed code)
-- Compare a set of histogrammed quantities between the proposed code and the reference code, which can help spotting unexpected changes. This comparison is published in the HGC TPG Validation [webpage](https://validation.llrhgcal.in2p3.fr/prod/). 
+- Compare a set of histogrammed quantities between the proposed code and the reference code, which can help spotting unexpected changes. This comparison is published in the HGCAL TPG Validation [webpage](https://validation.llrhgcal.in2p3.fr/prod/). 
 
-In addition to the automated validation scripts, it is recommended to have a review of the code before integration, although that is not enforced. The first guiding principle for the review should be to make sure that the intent of any piece of code is clear and can be understood by a future developer. The intent should ideally be expressed in the code itself (minimally with e.g. clear variable and function names and no magic numbers), and eventually in comments if necessary.
+In addition to the automated validation scripts, it is recommended to have a review of the code before integration, although that is not enforced. The first guiding principle for the review should be to make sure that the intent of any piece of code is clear and can be understood by a future developer. The intent should ideally be expressed in the code itself (minimally with e.g. clear variable and function names and no magic numbers), and eventually in comments if necessary. Once the intent of the code is clear it should be checked that it is doing what it is intended to do.
+
 More complete guidelines can be found in:
 - [CMSSW guidelines](https://cms-sw.github.io/cms_coding_rules.html)
 - [C++ Core Guidelines](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines)
